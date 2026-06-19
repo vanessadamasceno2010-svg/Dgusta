@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#06216f" />
+  <title>Cardápio Gerenciável | DGUSTA Lanches</title>
+  <style>
+    :root{
+      --blue:#06216f;
+      --blue-2:#0a3194;
+      --gold:#f2b705;
+      --gold-2:#ffcf3d;
+      --cream:#fff9ee;
+      --paper:#fffdf8;
+      --text:#111827;
+      --muted:#667085;
+      --line:rgba(6,33,111,.12);
+      --shadow:0 18px 45px rgba(6,33,111,.16);
+      --radius:22px;
+      --ok:#079455;
+      --danger:#d92d20;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(242,183,5,.20), transparent 28%),
+        radial-gradient(circle at 100% 10%, rgba(6,33,111,.16), transparent 26%),
+        linear-gradient(180deg, #fffdf6 0%, #fff7e5 52%, #ffffff 100%);
+    }
+    button, input, textarea, select{font:inherit}
+    button{cursor:pointer}
+    .app{width:min(1180px,100%); margin:0 auto; padding:16px 14px 92px}
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:20;
+      padding:10px 0;
+      backdrop-filter:blur(16px);
+      background:linear-gradient(180deg, rgba(255,253,248,.96), rgba(255,253,248,.72));
+    }
+    .topbar-inner{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      width:min(1180px,100%);
+      margin:0 auto;
+      padding:0 14px;
+    }
+    .brand-mini{display:flex; align-items:center; gap:10px; min-width:0}
+    .logo-mark{
+      width:45px;
+      height:45px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      color:var(--blue);
+      font-weight:1000;
+      letter-spacing:-1px;
+      background:linear-gradient(145deg,#fff 0%,#fff9ea 100%);
+      border:3px solid var(--gold);
+      box-shadow:0 8px 20px rgba(6,33,111,.12);
+      flex:0 0 auto;
+    }
+    .brand-mini strong{display:block; color:var(--blue); font-size:15px; line-height:1.05}
+    .brand-mini span{display:block; font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .pill-btn{
+      border:0;
+      border-radius:999px;
+      background:var(--blue);
+      color:#fff;
+      font-weight:850;
+      padding:11px 14px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      box-shadow:0 10px 24px rgba(6,33,111,.22);
+      transition:.18s ease;
+      white-space:nowrap;
+    }
+    .pill-btn:hover{transform:translateY(-1px); background:var(--blue-2)}
+    .pill-btn.secondary{background:#fff; color:var(--blue); border:1px solid var(--line); box-shadow:none}
+    .pill-btn.gold{background:linear-gradient(135deg,var(--gold),var(--gold-2)); color:var(--blue)}
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border-radius:32px;
+      margin-top:16px;
+      padding:26px 18px 22px;
+      background:
+        linear-gradient(135deg, rgba(6,33,111,.98), rgba(9,48,142,.92)),
+        url('');
+      color:#fff;
+      box-shadow:var(--shadow);
+      isolation:isolate;
+    }
+    .hero:before{
+      content:"";
+      position:absolute;
+      inset:-80px -80px auto auto;
+      width:260px;
+      height:260px;
+      border-radius:50%;
+      background:rgba(242,183,5,.24);
+      z-index:-1;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      inset:auto auto -110px -80px;
+      width:250px;
+      height:250px;
+      border-radius:50%;
+      background:rgba(255,255,255,.08);
+      z-index:-1;
+    }
+    .hero-grid{display:grid; grid-template-columns:1fr; gap:20px; align-items:center}
+    .hero-logo{
+      width:120px;
+      height:120px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      text-align:center;
+      margin:0 auto;
+      background:#fff;
+      color:var(--blue);
+      border:5px solid var(--gold);
+      box-shadow:0 20px 50px rgba(0,0,0,.22);
+      font-weight:1000;
+      line-height:.95;
+      letter-spacing:-1.8px;
+    }
+    .hero-logo small{display:block; font-size:16px; letter-spacing:0; margin-top:5px; color:#0070b8}
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:7px 11px;
+      background:rgba(255,255,255,.12);
+      color:#fff5cc;
+      font-weight:800;
+      font-size:12px;
+      margin-bottom:12px;
+    }
+    .hero h1{margin:0; font-size:clamp(31px,9vw,66px); line-height:.95; letter-spacing:-2px}
+    .hero p{margin:12px 0 0; color:#fff5d8; font-size:clamp(15px,3vw,19px); line-height:1.45; max-width:680px}
+    .hero-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px}
+    .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:18px}
+    .stat{border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.10); border-radius:18px; padding:12px}
+    .stat strong{display:block; font-size:18px; color:#fff}
+    .stat span{font-size:11px; color:#ffeeb2; font-weight:700}
+    .toolbar{
+      margin:18px 0 14px;
+      display:grid;
+      gap:10px;
+    }
+    .search-wrap{position:relative}
+    .search-wrap input{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:15px 14px 15px 45px;
+      outline:0;
+      background:rgba(255,255,255,.88);
+      box-shadow:0 10px 24px rgba(6,33,111,.07);
+      color:var(--text);
+    }
+    .search-wrap span{position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--blue); font-size:19px}
+    .chips{display:flex; gap:9px; overflow:auto; padding:2px 1px 7px; scrollbar-width:none}
+    .chips::-webkit-scrollbar{display:none}
+    .chip{
+      border:1px solid var(--line);
+      color:var(--blue);
+      background:#fff;
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:850;
+      white-space:nowrap;
+      box-shadow:0 8px 20px rgba(6,33,111,.05);
+    }
+    .chip.active{background:var(--blue); color:#fff; border-color:var(--blue)}
+    .section-title{display:flex; align-items:end; justify-content:space-between; gap:12px; margin:18px 0 12px}
+    .section-title h2{margin:0; color:var(--blue); font-size:22px; letter-spacing:-.7px}
+    .section-title small{color:var(--muted); font-weight:700}
+    .menu-grid{display:grid; grid-template-columns:1fr; gap:14px}
+    .card{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:rgba(255,255,255,.92);
+      box-shadow:0 12px 32px rgba(6,33,111,.08);
+      overflow:hidden;
+      position:relative;
+    }
+    .card.featured{border-color:rgba(242,183,5,.55); box-shadow:0 18px 42px rgba(242,183,5,.13)}
+    .product-card{display:grid; grid-template-columns:86px 1fr; min-height:142px}
+    .thumb{
+      background:
+        radial-gradient(circle at 35% 25%, rgba(255,255,255,.95), transparent 35%),
+        linear-gradient(135deg,#fff1ba,#e8952a 52%, #8b4a10);
+      min-height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-size:38px;
+      font-weight:1000;
+      overflow:hidden;
+    }
+    .thumb img{width:100%; height:100%; object-fit:cover; display:block}
+    .product-body{padding:14px 14px 13px; min-width:0}
+    .product-head{display:flex; gap:10px; align-items:flex-start; justify-content:space-between}
+    .product-head h3{margin:0; color:var(--blue); font-size:20px; line-height:1; letter-spacing:-.5px; text-transform:uppercase}
+    .tag{font-size:10px; font-weight:900; color:var(--blue); background:rgba(242,183,5,.25); border:1px solid rgba(242,183,5,.40); border-radius:999px; padding:5px 7px; white-space:nowrap}
+    .desc{margin:7px 0 12px; color:#475467; line-height:1.35; font-size:13px}
+    .prices{display:grid; grid-template-columns:repeat(auto-fit,minmax(98px,1fr)); gap:8px}
+    .price-box{border:1px dashed rgba(6,33,111,.22); border-radius:15px; padding:9px; background:linear-gradient(180deg,#fff,#fffaf0)}
+    .price-box span{display:block; font-size:10px; color:var(--muted); font-weight:850; text-transform:uppercase; letter-spacing:.5px}
+    .price-box strong{display:block; margin-top:2px; color:var(--blue); font-size:22px; line-height:1; letter-spacing:-.7px}
+    .empty{display:none; text-align:center; padding:24px; color:var(--muted)}
+    .features{display:grid; grid-template-columns:1fr; gap:10px; margin:18px 0}
+    .feature{padding:14px; border-radius:20px; background:#fff; border:1px solid var(--line); display:flex; gap:12px; align-items:center}
+    .feature b{color:var(--blue); display:block}
+    .feature span{color:var(--muted); font-size:13px}
+    .icon-badge{width:44px; height:44px; border-radius:16px; display:grid; place-items:center; background:linear-gradient(135deg,var(--gold),var(--gold-2)); color:var(--blue); flex:0 0 auto; font-size:22px}
+    .footer{
+      margin-top:24px;
+      padding:22px 14px;
+      text-align:center;
+      color:var(--muted);
+      border-top:1px solid var(--line);
+    }
+    .footer strong{color:var(--blue)}
+    .admin-panel{display:none}
+    body.admin-open .public-view{display:none}
+    body.admin-open .admin-panel{display:block}
+    .admin-shell{display:grid; gap:14px; margin-top:16px}
+    .admin-header{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+    .admin-header h1{margin:0; color:var(--blue); font-size:28px; letter-spacing:-1px}
+    .admin-card{padding:16px; border-radius:24px; background:#fff; border:1px solid var(--line); box-shadow:0 14px 38px rgba(6,33,111,.08)}
+    .form-grid{display:grid; grid-template-columns:1fr; gap:12px}
+    label{display:grid; gap:7px; color:var(--blue); font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:.5px}
+    input, textarea, select{
+      width:100%;
+      border:1px solid rgba(6,33,111,.16);
+      border-radius:16px;
+      padding:12px 13px;
+      background:#fffdf8;
+      color:var(--text);
+      outline:0;
+    }
+    textarea{min-height:86px; resize:vertical}
+    input:focus, textarea:focus, select:focus{border-color:var(--blue); box-shadow:0 0 0 4px rgba(6,33,111,.08)}
+    .admin-actions{display:flex; gap:9px; flex-wrap:wrap; margin-top:12px}
+    .btn{
+      border:0;
+      border-radius:15px;
+      padding:12px 14px;
+      font-weight:900;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
+      background:var(--blue);
+      color:#fff;
+    }
+    .btn:hover{filter:brightness(1.03); transform:translateY(-1px)}
+    .btn.ghost{background:#fff; color:var(--blue); border:1px solid var(--line)}
+    .btn.gold{background:linear-gradient(135deg,var(--gold),var(--gold-2)); color:var(--blue)}
+    .btn.danger{background:var(--danger); color:#fff}
+    .btn.ok{background:var(--ok); color:#fff}
+    .admin-list{display:grid; gap:10px}
+    .admin-item{border:1px solid var(--line); border-radius:18px; padding:12px; display:grid; gap:10px; background:#fffdf8}
+    .admin-item-top{display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
+    .admin-item h3{margin:0; color:var(--blue); font-size:16px}
+    .admin-item p{margin:3px 0 0; color:var(--muted); font-size:13px}
+    .mini-actions{display:flex; gap:7px; flex-wrap:wrap}
+    .mini-btn{border:1px solid var(--line); background:#fff; color:var(--blue); font-weight:850; border-radius:12px; padding:9px 10px}
+    .mini-btn.danger{color:#b42318; border-color:rgba(217,45,32,.20)}
+    .switch-row{display:flex; align-items:center; gap:9px; flex-wrap:wrap; color:var(--muted); font-size:13px; font-weight:800}
+    .check{width:auto}
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%) translateY(120%);
+      opacity:0;
+      z-index:99;
+      padding:12px 16px;
+      background:var(--blue);
+      color:#fff;
+      border-radius:999px;
+      box-shadow:0 14px 30px rgba(6,33,111,.22);
+      font-weight:800;
+      transition:.22s ease;
+      text-align:center;
+      width:max-content;
+      max-width:calc(100% - 26px);
+    }
+    .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+    .bottom-nav{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:10px;
+      z-index:25;
+      width:min(560px, calc(100% - 22px));
+      border:1px solid rgba(6,33,111,.12);
+      background:rgba(255,255,255,.92);
+      backdrop-filter:blur(16px);
+      border-radius:999px;
+      padding:7px;
+      box-shadow:0 16px 40px rgba(6,33,111,.16);
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:6px;
+    }
+    .bottom-nav button, .bottom-nav a{
+      border:0;
+      border-radius:999px;
+      padding:10px 6px;
+      color:var(--blue);
+      background:transparent;
+      font-weight:900;
+      font-size:12px;
+      text-decoration:none;
+      text-align:center;
+    }
+    .bottom-nav .primary{background:var(--blue); color:#fff}
+    .modal-backdrop{
+      position:fixed; inset:0; z-index:80; display:none; place-items:end center; background:rgba(6,15,44,.48); padding:14px;
+    }
+    .modal-backdrop.show{display:grid}
+    .modal{width:min(470px,100%); background:#fff; border-radius:28px; padding:18px; box-shadow:0 24px 60px rgba(0,0,0,.30)}
+    .modal h2{margin:0 0 6px; color:var(--blue)}
+    .modal p{margin:0 0 14px; color:var(--muted)}
+    .two{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .hint{font-size:12px; color:var(--muted); line-height:1.35; margin-top:8px}
+    .file-input{position:absolute; opacity:0; pointer-events:none; width:0; height:0}
+    @media (min-width:720px){
+      .app{padding:20px 22px 92px}
+      .topbar-inner{padding:0 22px}
+      .hero{padding:34px}
+      .hero-grid{grid-template-columns:170px 1fr}
+      .hero-logo{width:155px; height:155px; margin:0}
+      .toolbar{grid-template-columns:1fr auto; align-items:start}
+      .chips{justify-content:flex-end; flex-wrap:wrap; overflow:visible}
+      .menu-grid{grid-template-columns:repeat(2, minmax(0,1fr))}
+      .features{grid-template-columns:repeat(3,1fr)}
+      .form-grid{grid-template-columns:repeat(2,1fr)}
+      .form-grid .full{grid-column:1/-1}
+      .admin-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .modal-backdrop{place-items:center}
+    }
+    @media (min-width:1040px){
+      .menu-grid{grid-template-columns:repeat(3, minmax(0,1fr))}
+      .admin-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+    }
+    @media print{
+      .topbar,.bottom-nav,.toolbar,.hero-actions,.admin-panel,.modal-backdrop{display:none!important}
+      body{background:#fff}
+      .app{padding:0}
+      .hero{box-shadow:none; border-radius:0}
+      .card{break-inside:avoid; box-shadow:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-mini">
+        <div class="logo-mark">DG</div>
+        <div>
+          <strong id="miniBrand">DGUSTA Lanches</strong>
+          <span id="miniSlogan">Sabor que abraça!</span>
+        </div>
+      </div>
+      <button class="pill-btn secondary" id="openAdminBtn">⚙️ Gerenciar</button>
+    </div>
+  </div>
+
+  <main class="app public-view">
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="hero-logo"><div>DGUSTA<small>LANCHES</small></div></div>
+        <div>
+          <span class="eyebrow">🍲 Feito na hora • Ingredientes selecionados</span>
+          <h1 id="heroTitle">Tabela de Preços</h1>
+          <p id="heroSubtitle">Sabor que abraça! Confira nossas opções, escolha seu tamanho e peça seu favorito.</p>
+          <div class="hero-actions">
+            <a class="pill-btn gold" href="#cardapio">Ver cardápio</a>
+            <button class="pill-btn" id="printBtn">🖨️ Imprimir</button>
+          </div>
+          <div class="stats">
+            <div class="stat"><strong id="statItems">0</strong><span>Itens ativos</span></div>
+            <div class="stat"><strong>250/500ml</strong><span>Opções de tamanho</span></div>
+            <div class="stat"><strong>Premium</strong><span>Cardápio digital</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cardapio" class="toolbar">
+      <div class="search-wrap">
+        <span>🔎</span>
+        <input id="searchInput" type="search" placeholder="Buscar no cardápio..." autocomplete="off" />
+      </div>
+      <div class="chips" id="categoryChips"></div>
+    </section>
+
+    <div class="section-title">
+      <h2>Cardápio</h2>
+      <small id="resultCount"></small>
+    </div>
+
+    <section class="menu-grid" id="menuGrid"></section>
+    <div class="empty" id="emptyState">Nenhum item encontrado.</div>
+
+    <section class="features">
+      <div class="feature"><div class="icon-badge">♨️</div><div><b>Feito na hora</b><span>Produtos preparados com carinho e sabor caseiro.</span></div></div>
+      <div class="feature"><div class="icon-badge">💛</div><div><b>Sabor que abraça</b><span>Cardápio simples, direto e fácil de escolher.</span></div></div>
+      <div class="feature"><div class="icon-badge">🛍️</div><div><b>Pronto para venda</b><span>Visual otimizado para celular, balcão e impressão.</span></div></div>
+    </section>
+
+    <footer class="footer">
+      <strong id="footerBrand">DGUSTA Lanches</strong><br />
+      Cardápio gerenciável com salvamento automático neste dispositivo.
+    </footer>
+  </main>
+
+  <main class="app admin-panel">
+    <div class="admin-shell">
+      <div class="admin-header">
+        <div>
+          <h1>Painel do Cardápio</h1>
+          <div class="hint">Edite itens, preços e informações. As alterações ficam salvas no navegador.</div>
+        </div>
+        <button class="pill-btn secondary" id="closeAdminBtn">← Voltar ao cardápio</button>
+      </div>
+
+      <section class="admin-card">
+        <h2 style="margin:0 0 12px;color:var(--blue)">Dados da cafeteria</h2>
+        <div class="form-grid">
+          <label>Nome do negócio
+            <input id="businessName" />
+          </label>
+          <label>Slogan
+            <input id="businessSlogan" />
+          </label>
+          <label class="full">Texto principal
+            <textarea id="businessDescription"></textarea>
+          </label>
+          <label>WhatsApp para pedidos
+            <input id="businessWhatsapp" inputmode="numeric" placeholder="Ex: 5588999999999" />
+          </label>
+          <label>PIN do gerenciador
+            <input id="adminPin" inputmode="numeric" />
+          </label>
+        </div>
+        <div class="admin-actions">
+          <button class="btn ok" id="saveBusinessBtn">Salvar dados</button>
+          <button class="btn ghost" id="exportBtn">Exportar backup</button>
+          <button class="btn ghost" id="importBtn">Importar backup</button>
+          <input class="file-input" type="file" id="importFile" accept="application/json" />
+          <button class="btn danger" id="resetBtn">Restaurar padrão</button>
+        </div>
+      </section>
+
+      <section class="admin-card">
+        <h2 style="margin:0 0 12px;color:var(--blue)" id="formTitle">Adicionar item</h2>
+        <input type="hidden" id="editingId" />
+        <div class="form-grid">
+          <label>Nome do produto
+            <input id="productName" placeholder="Ex: Caldo de carne" />
+          </label>
+          <label>Categoria
+            <select id="productCategory"></select>
+          </label>
+          <label class="full">Descrição
+            <textarea id="productDescription" placeholder="Descrição curta para o cliente"></textarea>
+          </label>
+          <label>Emoji/ícone
+            <input id="productEmoji" placeholder="🍲" maxlength="4" />
+          </label>
+          <label>URL da imagem opcional
+            <input id="productImage" placeholder="https://..." />
+          </label>
+          <label>Preço 250 ML
+            <input id="price250" inputmode="decimal" placeholder="8,00" />
+          </label>
+          <label>Preço 500 ML
+            <input id="price500" inputmode="decimal" placeholder="15,00" />
+          </label>
+          <label>Preço único
+            <input id="singlePrice" inputmode="decimal" placeholder="5,00" />
+          </label>
+          <div class="switch-row full">
+            <input class="check" type="checkbox" id="productActive" checked /> Item ativo
+            <input class="check" type="checkbox" id="productFeatured" /> Destacar item
+          </div>
+        </div>
+        <div class="admin-actions">
+          <button class="btn gold" id="saveProductBtn">Salvar item</button>
+          <button class="btn ghost" id="clearFormBtn">Limpar formulário</button>
+        </div>
+        <div class="hint">Para itens com dois tamanhos, preencha 250 ML e 500 ML. Para bebidas ou sobremesas, use apenas preço único.</div>
+      </section>
+
+      <section class="admin-card">
+        <div class="section-title" style="margin-top:0">
+          <h2>Itens cadastrados</h2>
+          <small id="adminCount"></small>
+        </div>
+        <div class="admin-list" id="adminList"></div>
+      </section>
+    </div>
+  </main>
+
+  <nav class="bottom-nav public-view">
+    <a href="#cardapio">Cardápio</a>
+    <button class="primary" id="bottomOrderBtn">Pedir agora</button>
+    <button id="bottomAdminBtn">Gerenciar</button>
+  </nav>
+
+  <div class="modal-backdrop" id="pinModal">
+    <div class="modal">
+      <h2>Entrar no gerenciador</h2>
+      <p>Digite o PIN para editar o cardápio.</p>
+      <label>PIN
+        <input id="pinInput" type="password" inputmode="numeric" placeholder="PIN padrão: 1234" />
+      </label>
+      <div class="admin-actions">
+        <button class="btn" id="confirmPinBtn">Entrar</button>
+        <button class="btn ghost" id="cancelPinBtn">Cancelar</button>
+      </div>
+      <div class="hint">PIN inicial: <b>1234</b>. Altere no painel após entrar.</div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const STORAGE_KEY = 'dgusta-cardapio-v1';
+
+    const defaultState = {
+      business: {
+        name: 'DGUSTA Lanches',
+        slogan: 'Sabor que abraça!',
+        description: 'Confira nossas opções, escolha seu tamanho e peça seu favorito.',
+        whatsapp: '',
+        pin: '1234'
+      },
+      products: [
+        { id:'caldo-carne', name:'Caldo de Carne', category:'Caldos', description:'Caldo encorpado, quentinho e preparado na hora.', emoji:'🍲', image:'', price250:8, price500:15, singlePrice:null, active:true, featured:true },
+        { id:'vatapa-camarao', name:'Vatapá de Camarão', category:'Caldos', description:'Sabor marcante, cremoso e especial para quem ama camarão.', emoji:'🦐', image:'', price250:12, price500:20, singlePrice:null, active:true, featured:true },
+        { id:'caldo-verde', name:'Caldo Verde', category:'Caldos', description:'Uma opção tradicional, cremosa e cheia de sabor.', emoji:'🥬', image:'', price250:8, price500:15, singlePrice:null, active:true, featured:false },
+        { id:'creme-galinha', name:'Creme de Galinha', category:'Caldos', description:'Cremoso, leve e perfeito para qualquer hora do dia.', emoji:'🐔', image:'', price250:10, price500:15, singlePrice:null, active:true, featured:false },
+        { id:'canja-galinha', name:'Canja de Galinha', category:'Caldos', description:'Receita caseira, quentinha e muito aconchegante.', emoji:'🥣', image:'', price250:10, price500:15, singlePrice:null, active:true, featured:false },
+        { id:'caldo-quenga', name:'Caldo de Quenga', category:'Caldos', description:'Cremoso, reforçado e com aquele sabor que faz diferença.', emoji:'🔥', image:'', price250:10, price500:18, singlePrice:null, active:true, featured:true },
+        { id:'refrigerantes', name:'Refrigerantes', category:'Bebidas', description:'Coca-Cola, Fanta, Sprite e Guaraná.', emoji:'🥤', image:'', price250:null, price500:null, singlePrice:5, active:true, featured:false },
+        { id:'delicia-abacaxi', name:'Delícia de Abacaxi', category:'Sobremesas', description:'Sobremesa cremosa, refrescante e no ponto certo.', emoji:'🍍', image:'', price250:null, price500:null, singlePrice:5, active:true, featured:false }
+      ]
+    };
+
+    let state = loadState();
+    let activeCategory = 'Todos';
+
+    const $ = (id) => document.getElementById(id);
+
+    function loadState(){
+      try{
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if(!saved) return structuredClone(defaultState);
+        const parsed = JSON.parse(saved);
+        return {
+          business: { ...defaultState.business, ...(parsed.business || {}) },
+          products: Array.isArray(parsed.products) ? parsed.products : structuredClone(defaultState.products)
+        };
+      }catch(e){
+        return structuredClone(defaultState);
+      }
+    }
+
+    function saveState(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function money(value){
+      if(value === null || value === undefined || value === '') return '';
+      const number = Number(value);
+      if(Number.isNaN(number)) return '';
+      return number.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+    }
+
+    function parseMoney(value){
+      if(value === null || value === undefined) return null;
+      const cleaned = String(value).trim().replace('R$', '').replace(/\./g,'').replace(',', '.');
+      if(!cleaned) return null;
+      const number = Number(cleaned);
+      return Number.isFinite(number) ? number : null;
+    }
+
+    function uid(){
+      if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return 'item-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+    }
+
+    function showToast(message){
+      const toast = $('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function syncBusinessUI(){
+      $('miniBrand').textContent = state.business.name;
+      $('miniSlogan').textContent = state.business.slogan;
+      $('heroTitle').textContent = state.business.name.includes('DGUSTA') ? 'Tabela de Preços' : state.business.name;
+      $('heroSubtitle').textContent = state.business.slogan + ' ' + state.business.description;
+      $('footerBrand').textContent = state.business.name;
+      $('businessName').value = state.business.name || '';
+      $('businessSlogan').value = state.business.slogan || '';
+      $('businessDescription').value = state.business.description || '';
+      $('businessWhatsapp').value = state.business.whatsapp || '';
+      $('adminPin').value = state.business.pin || '1234';
+    }
+
+    function categories(){
+      const unique = [...new Set(state.products.map(p => p.category).filter(Boolean))];
+      return ['Todos', ...unique];
+    }
+
+    function renderCategories(){
+      const wrap = $('categoryChips');
+      wrap.innerHTML = '';
+      categories().forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'chip' + (cat === activeCategory ? ' active' : '');
+        btn.textContent = cat;
+        btn.onclick = () => { activeCategory = cat; renderAll(); };
+        wrap.appendChild(btn);
+      });
+
+      const select = $('productCategory');
+      const current = select.value;
+      const editableCats = categories().filter(c => c !== 'Todos');
+      select.innerHTML = '';
+      editableCats.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
+      });
+      const newOpt = document.createElement('option');
+      newOpt.value = 'Nova categoria';
+      newOpt.textContent = '+ Nova categoria';
+      select.appendChild(newOpt);
+      if(current) select.value = current;
+    }
+
+    function filteredProducts(){
+      const term = $('searchInput').value.trim().toLowerCase();
+      return state.products
+        .filter(p => p.active)
+        .filter(p => activeCategory === 'Todos' || p.category === activeCategory)
+        .filter(p => !term || [p.name, p.category, p.description].join(' ').toLowerCase().includes(term));
+    }
+
+    function productImageHTML(product){
+      if(product.image){
+        return `<img src="${escapeHTML(product.image)}" alt="${escapeHTML(product.name)}" onerror="this.remove(); this.parentElement.textContent='${escapeHTML(product.emoji || '🍲')}'">`;
+      }
+      return escapeHTML(product.emoji || '🍲');
+    }
+
+    function renderMenu(){
+      const grid = $('menuGrid');
+      const products = filteredProducts();
+      grid.innerHTML = '';
+      products.forEach(product => {
+        const priceParts = [];
+        if(product.price250 !== null && product.price250 !== undefined) priceParts.push(`<div class="price-box"><span>250 ML</span><strong>${money(product.price250)}</strong></div>`);
+        if(product.price500 !== null && product.price500 !== undefined) priceParts.push(`<div class="price-box"><span>500 ML</span><strong>${money(product.price500)}</strong></div>`);
+        if(product.singlePrice !== null && product.singlePrice !== undefined) priceParts.push(`<div class="price-box"><span>Preço</span><strong>${money(product.singlePrice)}</strong></div>`);
+        const card = document.createElement('article');
+        card.className = 'card product-card' + (product.featured ? ' featured' : '');
+        card.innerHTML = `
+          <div class="thumb">${productImageHTML(product)}</div>
+          <div class="product-body">
+            <div class="product-head">
+              <h3>${escapeHTML(product.name)}</h3>
+              ${product.featured ? '<span class="tag">Destaque</span>' : ''}
+            </div>
+            <p class="desc">${escapeHTML(product.description || '')}</p>
+            <div class="prices">${priceParts.join('')}</div>
+          </div>`;
+        grid.appendChild(card);
+      });
+      $('emptyState').style.display = products.length ? 'none' : 'block';
+      $('resultCount').textContent = `${products.length} item${products.length === 1 ? '' : 's'}`;
+      $('statItems').textContent = state.products.filter(p => p.active).length;
+    }
+
+    function renderAdminList(){
+      const list = $('adminList');
+      list.innerHTML = '';
+      state.products.forEach(product => {
+        const item = document.createElement('div');
+        item.className = 'admin-item';
+        const prices = [
+          product.price250 !== null && product.price250 !== undefined ? `250ml: ${money(product.price250)}` : '',
+          product.price500 !== null && product.price500 !== undefined ? `500ml: ${money(product.price500)}` : '',
+          product.singlePrice !== null && product.singlePrice !== undefined ? `Único: ${money(product.singlePrice)}` : ''
+        ].filter(Boolean).join(' • ');
+        item.innerHTML = `
+          <div class="admin-item-top">
+            <div>
+              <h3>${escapeHTML(product.emoji || '')} ${escapeHTML(product.name)}</h3>
+              <p>${escapeHTML(product.category)} • ${prices || 'Sem preço'} • ${product.active ? 'Ativo' : 'Oculto'}</p>
+            </div>
+          </div>
+          <div class="mini-actions">
+            <button class="mini-btn" data-action="edit" data-id="${product.id}">Editar</button>
+            <button class="mini-btn" data-action="toggle" data-id="${product.id}">${product.active ? 'Ocultar' : 'Ativar'}</button>
+            <button class="mini-btn danger" data-action="delete" data-id="${product.id}">Excluir</button>
+          </div>`;
+        list.appendChild(item);
+      });
+      $('adminCount').textContent = `${state.products.length} cadastrado${state.products.length === 1 ? '' : 's'}`;
+    }
+
+    function renderAll(){
+      syncBusinessUI();
+      renderCategories();
+      renderMenu();
+      renderAdminList();
+    }
+
+    function escapeHTML(text){
+      return String(text ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[char]));
+    }
+
+    function clearForm(){
+      $('editingId').value = '';
+      $('formTitle').textContent = 'Adicionar item';
+      $('productName').value = '';
+      $('productCategory').value = categories().find(c => c !== 'Todos') || 'Caldos';
+      $('productDescription').value = '';
+      $('productEmoji').value = '🍲';
+      $('productImage').value = '';
+      $('price250').value = '';
+      $('price500').value = '';
+      $('singlePrice').value = '';
+      $('productActive').checked = true;
+      $('productFeatured').checked = false;
+    }
+
+    function editProduct(id){
+      const product = state.products.find(p => p.id === id);
+      if(!product) return;
+      $('editingId').value = product.id;
+      $('formTitle').textContent = 'Editar item';
+      $('productName').value = product.name || '';
+      $('productCategory').value = product.category || 'Caldos';
+      $('productDescription').value = product.description || '';
+      $('productEmoji').value = product.emoji || '';
+      $('productImage').value = product.image || '';
+      $('price250').value = product.price250 ?? '';
+      $('price500').value = product.price500 ?? '';
+      $('singlePrice').value = product.singlePrice ?? '';
+      $('productActive').checked = !!product.active;
+      $('productFeatured').checked = !!product.featured;
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
+
+    function saveProduct(){
+      const name = $('productName').value.trim();
+      if(!name){ showToast('Informe o nome do produto.'); return; }
+      let category = $('productCategory').value;
+      if(category === 'Nova categoria'){
+        const nova = prompt('Nome da nova categoria:');
+        category = nova && nova.trim() ? nova.trim() : 'Outros';
+      }
+      const product = {
+        id: $('editingId').value || uid(),
+        name,
+        category,
+        description: $('productDescription').value.trim(),
+        emoji: $('productEmoji').value.trim() || '🍲',
+        image: $('productImage').value.trim(),
+        price250: parseMoney($('price250').value),
+        price500: parseMoney($('price500').value),
+        singlePrice: parseMoney($('singlePrice').value),
+        active: $('productActive').checked,
+        featured: $('productFeatured').checked
+      };
+      const index = state.products.findIndex(p => p.id === product.id);
+      if(index >= 0) state.products[index] = product;
+      else state.products.push(product);
+      saveState();
+      clearForm();
+      renderAll();
+      showToast('Item salvo com sucesso.');
+    }
+
+    function deleteProduct(id){
+      const product = state.products.find(p => p.id === id);
+      if(!product) return;
+      if(confirm(`Excluir "${product.name}"?`)){
+        state.products = state.products.filter(p => p.id !== id);
+        saveState();
+        renderAll();
+        showToast('Item excluído.');
+      }
+    }
+
+    function toggleProduct(id){
+      const product = state.products.find(p => p.id === id);
+      if(!product) return;
+      product.active = !product.active;
+      saveState();
+      renderAll();
+      showToast(product.active ? 'Item ativado.' : 'Item ocultado.');
+    }
+
+    function saveBusiness(){
+      state.business.name = $('businessName').value.trim() || 'DGUSTA Lanches';
+      state.business.slogan = $('businessSlogan').value.trim() || 'Sabor que abraça!';
+      state.business.description = $('businessDescription').value.trim() || '';
+      state.business.whatsapp = $('businessWhatsapp').value.replace(/\D/g, '');
+      state.business.pin = $('adminPin').value.trim() || '1234';
+      saveState();
+      renderAll();
+      showToast('Dados salvos.');
+    }
+
+    function openPinModal(){
+      $('pinInput').value = '';
+      $('pinModal').classList.add('show');
+      setTimeout(() => $('pinInput').focus(), 60);
+    }
+
+    function enterAdmin(){
+      document.body.classList.add('admin-open');
+      $('pinModal').classList.remove('show');
+      renderAll();
+      window.scrollTo({top:0});
+    }
+
+    function closeAdmin(){
+      document.body.classList.remove('admin-open');
+      renderAll();
+      window.scrollTo({top:0});
+    }
+
+    function whatsappOrder(){
+      const phone = (state.business.whatsapp || '').replace(/\D/g, '');
+      const text = encodeURIComponent(`Olá! Quero fazer um pedido pelo cardápio da ${state.business.name}.`);
+      if(phone){ window.open(`https://wa.me/${phone}?text=${text}`, '_blank'); }
+      else { showToast('Cadastre o WhatsApp no gerenciador.'); openPinModal(); }
+    }
+
+    function exportBackup(){
+      const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'backup-cardapio-dgusta.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function importBackup(file){
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try{
+          const imported = JSON.parse(reader.result);
+          if(!imported.business || !Array.isArray(imported.products)) throw new Error('invalid');
+          state = imported;
+          saveState();
+          renderAll();
+          showToast('Backup importado.');
+        }catch(e){
+          showToast('Arquivo inválido.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    $('openAdminBtn').addEventListener('click', openPinModal);
+    $('bottomAdminBtn').addEventListener('click', openPinModal);
+    $('cancelPinBtn').addEventListener('click', () => $('pinModal').classList.remove('show'));
+    $('pinModal').addEventListener('click', e => { if(e.target.id === 'pinModal') $('pinModal').classList.remove('show'); });
+    $('confirmPinBtn').addEventListener('click', () => {
+      if($('pinInput').value === (state.business.pin || '1234')) enterAdmin();
+      else showToast('PIN incorreto.');
+    });
+    $('pinInput').addEventListener('keydown', e => { if(e.key === 'Enter') $('confirmPinBtn').click(); });
+    $('closeAdminBtn').addEventListener('click', closeAdmin);
+    $('searchInput').addEventListener('input', renderMenu);
+    $('printBtn').addEventListener('click', () => window.print());
+    $('bottomOrderBtn').addEventListener('click', whatsappOrder);
+    $('saveBusinessBtn').addEventListener('click', saveBusiness);
+    $('saveProductBtn').addEventListener('click', saveProduct);
+    $('clearFormBtn').addEventListener('click', clearForm);
+    $('exportBtn').addEventListener('click', exportBackup);
+    $('importBtn').addEventListener('click', () => $('importFile').click());
+    $('importFile').addEventListener('change', e => importBackup(e.target.files[0]));
+    $('resetBtn').addEventListener('click', () => {
+      if(confirm('Restaurar o cardápio padrão da DGUSTA?')){
+        state = structuredClone(defaultState);
+        saveState();
+        clearForm();
+        renderAll();
+        showToast('Cardápio restaurado.');
+      }
+    });
+    $('adminList').addEventListener('click', e => {
+      const btn = e.target.closest('button[data-action]');
+      if(!btn) return;
+      const action = btn.dataset.action;
+      const id = btn.dataset.id;
+      if(action === 'edit') editProduct(id);
+      if(action === 'toggle') toggleProduct(id);
+      if(action === 'delete') deleteProduct(id);
+    });
+
+    renderAll();
+    clearForm();
+  </script>
+</body>
+</html>
