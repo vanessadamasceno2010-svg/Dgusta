@@ -290,7 +290,7 @@ function renderLogo(){
 function renderQuickInfo(){
   const visible=data.products.filter(p=>p.visible);
   const cats=data.categories.filter(c=>visible.some(p=>(p.category||'Outros')===c));
-  document.getElementById('quickInfo').innerHTML = cats.map(c=>`<button class="quick-chip" onclick="openCategoryAndScroll('${jsAttr(c)}')">${escapeHtml(c)}</button>`).join('');
+  document.getElementById('quickInfo').innerHTML = cats.map(c=>`<button class="quick-chip" onclick="openCategoryAndScroll('${jsString(c)}')">${escapeHtml(c)}</button>`).join('');
 }
 function productsByCategory(){
   const visible=data.products.filter(p=>p.visible);
@@ -307,7 +307,7 @@ function renderCategoryCascade(){
     const isOpen=data.openCategories[g.category]!==false && (data.openCategories[g.category] || idx===0);
     if(data.openCategories[g.category]===undefined && idx===0) data.openCategories[g.category]=true;
     return `<section class="category-card ${isOpen?'':'closed'}" id="cat-${slug(g.category)}">
-      <button class="category-toggle" onclick="toggleCategory('${jsAttr(g.category)}')">
+      <button class="category-toggle" onclick="toggleCategory('${jsString(g.category)}')">
         <span><strong>${escapeHtml(g.category)}</strong><small>${g.items.length} ${g.items.length===1?'produto':'produtos'}</small></span>
         <span class="chev">⌄</span>
       </button>
@@ -401,7 +401,7 @@ function renderAdminProducts(){
 function renderAdminProductsTitleOnly(){document.querySelectorAll('.admin-product').forEach(el=>{const idx=+el.dataset.pidx;const b=el.querySelector('.admin-product-title b');if(b)b.textContent=data.products[idx]?.name||'Novo produto'})}
 function renderCategoryChips(){
   const box=document.getElementById('categoryChips'); if(!box) return;
-  box.innerHTML=data.categories.map(c=>`<span class="chip">${escapeHtml(c)} <button title="Excluir categoria" onclick="removeCategory('${jsAttr(c)}')">×</button></span>`).join('');
+  box.innerHTML=data.categories.map(c=>`<span class="chip">${escapeHtml(c)} <button title="Excluir categoria" onclick="removeCategory('${jsString(c)}')">×</button></span>`).join('');
 }
 function categorySelectHtml(idx,current){
   const cats=[...new Set([...data.categories,current].filter(Boolean))];
@@ -470,7 +470,6 @@ function resetData(){if(confirm('Restaurar dados padrão?')){data=clone(defaultD
 function escapeHtml(s){return String(s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function escapeAttr(s){return escapeHtml(s).replace(/`/g,'&#96;')}
 function jsString(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' ')}
-function jsAttr(s){return escapeAttr(jsString(s))}
 function slug(s){return String(s||'categoria').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')||'categoria'}
 
 document.addEventListener('input',e=>{if(e.target && e.target.id==='storeWhatsapp') e.target.value=onlyNumbers(e.target.value)});
